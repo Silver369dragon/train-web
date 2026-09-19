@@ -40,8 +40,13 @@ train-web/
 4. 若有照片，放入 `assets/`，建議使用約 600 × 720 像素、300 KB 以下的 WebP 或 JPEG。把 `.profile-portrait` 整段替換成：
 
    ```html
-   <img class="profile-photo" src="../assets/chen-yu.webp"
-        width="250" height="280" alt="陳宇的個人照片">
+   <img
+     class="profile-photo"
+     src="../assets/chen-yu.webp"
+     width="250"
+     height="280"
+     alt="陳宇的個人照片"
+   />
    ```
 
 5. 在首頁 `id="team"` 的 `.member-grid` 清單中，複製包含 `a.member-card` 的 `<li>`，或用下列卡片替換預留位置。修改姓名、角色、摘要、專長、連結與 `aria-label`；每位成員各連到自己的個人頁。資料填妥後移除該卡的「範本預覽」標示；全部換成正式資料後再移除區塊下方的示範提醒。
@@ -51,11 +56,17 @@ train-web/
      <a class="member-card" href="members/chen-yu.html" aria-label="認識陳宇">
        <div class="member-card-header">
          <span class="member-avatar" aria-hidden="true">陳</span>
-         <div class="member-info"><h3>陳宇</h3><p>前端開發</p></div>
+         <div class="member-info">
+           <h3>陳宇</h3>
+           <p>前端開發</p>
+         </div>
        </div>
        <p class="member-summary">把處室需求轉化成清楚、易用的網頁介面。</p>
        <div class="tag-row"><span>介面設計</span><span>網頁開發</span></div>
-       <div class="member-card-footer"><span class="member-status">系統開發</span><span>個人介紹 <span aria-hidden="true">→</span></span></div>
+       <div class="member-card-footer">
+         <span class="member-status">系統開發</span
+         ><span>個人介紹 <span aria-hidden="true">→</span></span>
+       </div>
      </a>
    </li>
    ```
@@ -75,8 +86,6 @@ train-web/
 - 適合成員少、更新頻率低的情境；優點是容易理解、沒有資料庫維護成本。
 - 驗收：新增一位成員後，首頁能開啟其個人頁，個人頁能返回首頁，手機不橫向溢出。
 
-
-
 ## 設計與維護
 
 - 色彩：米白背景 `#f7f6f0`、深綠文字 `#243f36`、橘色操作重點 `#bb512d`；在 CSS 的 `:root` 統一調整。
@@ -84,7 +93,6 @@ train-web/
 - 版面：最大寬度 1240px，夥伴清單依螢幕寬度使用三欄、兩欄或一欄；760px 以下改為單欄，行動版保留完整導覽。
 - 元件：共用按鈕、服務卡片、個人卡片；常見問題使用原生 `details/summary`，無需 JavaScript。
 - 無障礙：提供跳至內容、語意區塊、圖片替代文字、鍵盤焦點與減少動畫設定。
-
 
 ## 檢查方式
 
