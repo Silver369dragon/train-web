@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="540" viewBox="0 0 600 540" fill="none">
+  <defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#d9d8ca"/></pattern></defs>
+  <rect x="30" y="26" width="540" height="460" fill="url(#dots)"/>
+  <path d="M496 270a188 188 0 0 0-376 0v155h376V270Z" fill="#edb992"/>
+  <circle cx="476" cy="102" r="48" fill="#e4e9db"/>
+  <path d="m466 81 7 15 17-4-12 13 7 15-16-7-12 12 3-18-15-8 18-1 3-17Z" fill="#315c50"/>
+  <path d="M47 285c-34-129 178-232 362-189 156 37 169 165 112 256-59 96-245 147-361 97" stroke="#547265" stroke-width="1.5" stroke-dasharray="6 7"/>
+  <g transform="rotate(-6 286 290)"><rect x="111" y="130" width="349" height="280" rx="15" fill="#244b43"/><rect x="103" y="121" width="349" height="280" rx="15" fill="#fcfbf5" stroke="#244b43" stroke-width="2"/>
+  <path d="M104 156h347" stroke="#244b43" stroke-width="2"/>
+  <circle cx="120" cy="139" r="3.5" fill="#da7349"/><circle cx="133" cy="139" r="3.5" fill="#eccba6"/><circle cx="146" cy="139" r="3.5" fill="#76927e"/>
+  <rect x="351" y="134" width="83" height="9" rx="4.5" fill="#e8e8de"/>
+  <rect x="122" y="174" width="201" height="160" rx="8" fill="#e4e9db"/>
+  <text x="140" y="200" fill="#244b43" font-size="13" font-family="Microsoft JhengHei, sans-serif">行政流程</text>
+  <path d="M153 230v70" stroke="#94aa91" stroke-width="2" stroke-dasharray="3 4"/>
+  <rect x="139" y="216" width="169" height="28" rx="5" fill="#fcfbf5"/><rect x="139" y="253" width="169" height="28" rx="5" fill="#fcfbf5"/><rect x="139" y="290" width="169" height="28" rx="5" fill="#fcfbf5"/>
+  <circle cx="153" cy="230" r="7" fill="#527d68"/><circle cx="153" cy="267" r="7" fill="#527d68"/><circle cx="153" cy="304" r="7" fill="#d7754f"/>
+  <path d="m150 230 2 2 4-5m-6 40 2 2 4-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M172 230h77m-77 37h101m-101 37h61" stroke="#94aa91" stroke-width="5" stroke-linecap="round"/>
+  <rect x="336" y="174" width="97" height="75" rx="8" fill="#f0d0ab"/><path d="M352 196h39m-39 14h62m-62 14h28" stroke="#b67952" stroke-width="5" stroke-linecap="round"/>
+  <rect x="336" y="260" width="97" height="74" rx="8" fill="#dee4e7"/><path d="M353 316v-18m18 18v-29m18 29v-22m18 22v-40" stroke="#6e858f" stroke-width="8" stroke-linecap="round"/>
+  <rect x="122" y="350" width="130" height="7" rx="3.5" fill="#779181"/><rect x="122" y="366" width="87" height="5" rx="2.5" fill="#d4dacb"/>
+  <circle cx="363" cy="362" r="13" fill="#e4e9db"/><path d="M359 362h8m-4-4v8" stroke="#315c50" stroke-width="1.5"/>
+  <rect x="386" y="349" width="47" height="26" rx="13" fill="#d7754f"/><path d="m402 362 4 4 9-9" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="rotate(8 449 330)"><rect x="408" y="324" width="132" height="122" rx="4" fill="#244b43"/><rect x="402" y="316" width="132" height="122" rx="4" fill="#fbf6e9" stroke="#244b43" stroke-width="1.5"/><path d="M420 337h54m-54 11h94m-94 11h81" stroke="#bcc5b1" stroke-width="3" stroke-linecap="round"/><path d="m420 407 16-16 15 9 22-27 17 12 21-8" stroke="#d7754f" stroke-width="3" stroke-linejoin="round"/><circle cx="473" cy="373" r="4" fill="#d7754f"/></g>
+  <g transform="rotate(-10 127 417)"><rect x="61" y="385" width="144" height="91" rx="7" fill="#244b43"/><rect x="55" y="379" width="144" height="91" rx="7" fill="#fbf6e9" stroke="#244b43" stroke-width="1.5"/><path d="M55 399h144" stroke="#244b43" stroke-width="1.5"/><circle cx="67" cy="389" r="2.5" fill="#d7754f"/><circle cx="77" cy="389" r="2.5" fill="#779181"/><path d="m88 417-13 13 13 13m18 0 10-26m18 0 13 13-13 13" stroke="#527d68" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M157 443h23" stroke="#d7754f" stroke-width="3" stroke-linecap="round"/></g>
+  <rect x="48" y="105" width="117" height="39" rx="19.5" fill="#244b43"/>
+  <text x="106.5" y="130" fill="#fffdf4" font-size="14" text-anchor="middle" font-family="Microsoft JhengHei, sans-serif">行政 × 程式</text>
+  <rect x="392" y="219" width="158" height="43" rx="21.5" fill="#fffdf4" stroke="#d8decc"/>
+  <circle cx="415" cy="240" r="9" fill="#527d68"/><path d="m411 240 3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="436" y="246" fill="#244b43" font-size="14" font-family="Microsoft JhengHei, sans-serif">讓流程，更順暢</text>
+  <path d="M327 440v28m-14-14h28m-24-10 20 20m-20 0 20-20" stroke="#d7754f" stroke-width="3"/>
+  <circle cx="85" cy="214" r="7" fill="#d7754f"/><circle cx="514" cy="180" r="4" fill="#244b43"/>
+</svg>
