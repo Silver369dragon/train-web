@@ -56,19 +56,19 @@
           <p class="project-form-note">標示「必填」的欄位請務必填寫。</p>
           <div class="project-field">
             <label for="project-name">作品名稱 <span>必填</span></label>
-            <input id="project-name" name="name" type="text" required aria-describedby="project-name-hint project-name-error">
+            <input id="project-name" name="name" type="text" maxlength="80" required aria-describedby="project-name-hint project-name-error">
             <p id="project-name-hint" class="project-hint">去除前後空白後，1～80 字。</p>
             <p id="project-name-error" class="project-error" hidden></p>
           </div>
           <div class="project-field">
             <label for="project-description">作品介紹</label>
-            <textarea id="project-description" name="description" rows="3" aria-describedby="project-description-hint project-description-error"></textarea>
+            <textarea id="project-description" name="description" rows="3" maxlength="500" aria-describedby="project-description-hint project-description-error"></textarea>
             <p id="project-description-hint" class="project-hint">最多 500 字。</p>
             <p id="project-description-error" class="project-error" hidden></p>
           </div>
           <div class="project-field">
             <label for="project-technologies">使用技術</label>
-            <input id="project-technologies" name="technologies" type="text" placeholder="例如 HTML、CSS、JavaScript" aria-describedby="project-technologies-hint project-technologies-error">
+            <input id="project-technologies" name="technologies" type="text" maxlength="100" placeholder="例如 HTML、CSS、JavaScript" aria-describedby="project-technologies-hint project-technologies-error">
             <p id="project-technologies-hint" class="project-hint">最多 100 字。</p>
             <p id="project-technologies-error" class="project-error" hidden></p>
           </div>
