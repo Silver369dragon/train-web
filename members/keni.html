@@ -8,6 +8,8 @@
   <title>傅可妮｜成員介紹｜學生程式開發團隊</title>
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="keni.css">
+  <script src="keni.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳至主要內容</a>
@@ -23,7 +25,7 @@
       <div class="profile-portrait" role="img" aria-label="傅可妮的示意頭像"><div class="avatar-illustration" aria-hidden="true"><span class="avatar-head"></span><span class="avatar-body"></span><span class="avatar-spark">✳</span></div></div>
       <div class="profile-intro"><p class="eyebrow">MEET THE STUDENT DEVELOPERS</p><h1 id="member-name">傅可妮</h1><p>資訊工程學系大二</p><blockquote>「從實作中探索程式的可能性，希望用所學的技術解決生活中的問題。」</blockquote><div class="tag-row"><span>C++</span><span>Python</span><span>AI 應用</span></div></div>
     </section>
-    <nav class="profile-section-nav" aria-label="個人頁章節"><a href="#bio">關於我</a><a href="#expertise">技術專長</a><a href="#contact">聯絡資訊</a></nav>
+    <nav class="profile-section-nav" aria-label="個人頁章節"><a href="#bio">關於我</a><a href="#expertise">技術專長</a><a href="#projects">作品紀錄</a><a href="#contact">聯絡資訊</a></nav>
     <div class="profile-body">
       <div class="profile-content">
         <section id="bio" aria-labelledby="bio-title"><p class="eyebrow">01 / ABOUT ME</p><h2 id="bio-title">你好，很高興認識你。</h2><p>就讀資訊工程學系二年級，目前接觸與學習 C++、Python、HTML、CSS 等程式語言與工具。</p><p>加入團隊是希望能透過實際參與，將課堂上學到的知識應用在真實的問題中，在過程裡累積實作與開發經驗。同時也希望能運用所學，從校園生活中的不便出發，嘗試改善繁瑣的流程與資訊使用方式，讓校園生活變得更加便利。</p></section>
@@ -31,6 +33,102 @@
       </div>
       <aside class="profile-sidebar" id="contact" aria-labelledby="contact-title"><p class="eyebrow">LET'S CONNECT</p><h2 id="contact-title">保持聯繫</h2><dl><dt>姓名</dt><dd>傅可妮</dd><dt>系級</dt><dd>資工系二年級</dd><dt>電子信箱</dt><dd>414411040@o365.tku.edu.tw</dd></dl><a class="text-link" href="../index.html#services">了解團隊的合作方向 <span aria-hidden="true">↗</span></a></aside>
     </div>
+    <section id="projects" class="projects" aria-labelledby="projects-title">
+      <div class="projects-heading">
+        <div><p class="eyebrow">03 / PROJECT JOURNAL</p><h2 id="projects-title">我的作品紀錄</h2></div>
+        <p class="projects-note">記錄學習與練習的進度，持續累積作品與經驗。</p>
+      </div>
+      <noscript><p>請啟用 JavaScript，以使用作品紀錄管理功能。</p></noscript>
+      <div class="projects-toolbar">
+        <div class="project-field">
+          <label for="project-search">搜尋作品名稱</label>
+          <input id="project-search" type="search" placeholder="輸入作品名稱……">
+        </div>
+        <div class="project-field">
+          <label for="project-filter">篩選作品狀態</label>
+          <select id="project-filter">
+            <option value="all">全部狀態</option>
+            <option value="in_progress">進行中</option>
+            <option value="completed">已完成</option>
+          </select>
+        </div>
+      </div>
+      <p id="project-message" class="project-message" role="status" aria-atomic="true"></p>
+      <div class="projects-workspace">
+        <form id="project-form" class="project-form" aria-labelledby="project-form-title" novalidate>
+          <h3 id="project-form-title">新增作品</h3>
+          <p class="project-form-note">標示「必填」的欄位請務必填寫。</p>
+
+          <div class="project-field">
+            <label for="project-name">作品名稱 <span>必填</span></label>
+            <input id="project-name" name="name" type="text" maxlength="80" required aria-describedby="project-name-hint project-name-error">
+            <p id="project-name-hint" class="project-hint">去除前後空白後，1～80 字。</p>
+            <p id="project-name-error" class="project-error" hidden></p>
+          </div>
+
+          <div class="project-field">
+            <label for="project-description">作品介紹</label>
+            <textarea id="project-description" name="description" rows="3" maxlength="500" aria-describedby="project-description-hint project-description-error"></textarea>
+            <p id="project-description-hint" class="project-hint">最多 500 字。</p>
+            <p id="project-description-error" class="project-error" hidden></p>
+          </div>
+
+          <div class="project-field">
+            <label for="project-technologies">使用技術</label>
+            <input id="project-technologies" name="technologies" type="text" maxlength="100" placeholder="例如 HTML、CSS、JavaScript" aria-describedby="project-technologies-hint project-technologies-error">
+            <p id="project-technologies-hint" class="project-hint">最多 100 字。</p>
+            <p id="project-technologies-error" class="project-error" hidden></p>
+          </div>
+
+          <div class="project-field">
+            <label for="project-status">作品狀態 <span>必填</span></label>
+            <select id="project-status" name="status" required aria-describedby="project-status-error">
+              <option value="in_progress">進行中</option>
+              <option value="completed">已完成</option>
+            </select>
+            <p id="project-status-error" class="project-error" hidden></p>
+          </div>
+
+          <div class="project-field">
+            <label for="project-url">作品連結</label>
+            <input id="project-url" name="url" type="url" placeholder="https://example.com" aria-describedby="project-url-hint project-url-error">
+            <p id="project-url-hint" class="project-hint">選填，僅接受 http:// 或 https:// 網址。</p>
+            <p id="project-url-error" class="project-error" hidden></p>
+          </div>
+
+          <div class="project-form-actions">
+            <button id="project-submit" class="button" type="submit">新增作品</button>
+            <button id="project-cancel" class="project-secondary" type="button" hidden>取消編輯</button>
+          </div>
+        </form>
+
+        <section class="project-results" aria-label="作品清單">
+          <p id="project-count" class="project-count" role="status" aria-atomic="true"></p>
+          <ul id="project-list" class="project-list"></ul>
+          <p id="project-empty" class="project-empty" hidden></p>
+        </section>
+      </div>
+
+      <template id="project-template">
+        <li class="project-item">
+          <article class="project-card">
+            <div class="project-card-heading">
+              <h3 class="project-name">作品名稱</h3>
+              <span class="project-badge"></span>
+            </div>
+            <p class="project-description"></p>
+            <p class="project-technologies"><strong>使用技術</strong><span></span></p>
+            <div class="project-card-footer">
+              <a class="text-link project-link" href="#projects" target="_blank" rel="noopener noreferrer">查看作品 <span aria-hidden="true">↗</span><span class="project-sr-only">（在新分頁開啟）</span></a>
+              <div class="project-card-actions">
+                <button class="project-secondary" type="button" data-action="edit">編輯</button>
+                <button class="project-delete" type="button" data-action="delete">刪除</button>
+              </div>
+            </div>
+          </article>
+        </li>
+      </template>
+    </section>
   </main>
   <footer class="site-footer container"><div><a class="footer-name" href="../index.html">學生程式開發團隊</a><p>遠距教學中心｜校園數位轉型與流程自動化</p></div><div class="footer-meta"><p>成員介紹</p><a href="#main">回到頂端 <span aria-hidden="true">↑</span></a></div></footer>
 </body>
