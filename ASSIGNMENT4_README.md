@@ -264,3 +264,37 @@ Get-Content .\seed.sql | mysql -u dev_user -p train_db
 - 後端網址驗證目前只檢查 `http://`、`https://` 開頭；可改用 `urllib.parse.urlparse()` 再確認 hostname，以提高資料品質。
 - `GET /api/projects` 目前一次回傳所有資料；作品量增加時可加上分頁與伺服器端搜尋。
 - 個人頁的說明文字仍寫著「變更僅保留在本次瀏覽，重新整理後會重設」；目前實作已改為寫入 MySQL，應更新為資料會持久保存。
+
+## 8. 自動化測試說明與結果
+
+本專案依照作業規範，使用獨立的 MySQL 測試資料庫 `train_test_db` 搭配 Python 內建 `unittest` 與 Flask `test_client` 進行 API 驗證，絕不更動或清空開發資料庫。
+
+### 測試資料庫設定與初始化
+1. 建立獨立測試庫並賦予權限：
+   ```sql
+   CREATE DATABASE IF NOT EXISTS train_test_db DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+   GRANT ALL PRIVILEGES ON train_test_db.* TO 'dev_user'@'localhost';
+   FLUSH PRIVILEGES;
+
+2. 匯入資料表結構（於 PowerShell 執行）：
+   ```powershell
+   Get-Content .\schema.sql | mysql -u dev_user -p train_test_db
+
+執行自動化測試指令
+
+請先確認虛擬環境已啟用（命令列前方有 (.venv)），於專案根目錄執行：
+```
+PowerShell
+python -m unittest test_app.py -v
+
+實際執行結果
+Plaintext
+test_01_create_and_get_project_success (test_app.ProjectApiTestCase.test_01_create_and_get_project_success) ... ok
+test_02_invalid_project_rejected_and_not_stored (test_app.ProjectApiTestCase.test_02_invalid_project_rejected_and_not_stored) ... ok
+test_03_update_and_delete_specific_project_isolates_others (test_app.ProjectApiTestCase.test_03_update_and_delete_specific_project_isolates_others) ... ok
+test_04_nonexistent_id_returns_404 (test_app.ProjectApiTestCase.test_04_nonexistent_id_returns_404) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.085s
+
+OK
