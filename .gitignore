@@ -1,0 +1,21 @@
+# Python 虛擬環境
+venv/
+.venv/
+env/
+ENV/
+
+# Python 快取與編譯檔案
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 資料庫連線金鑰與環境設定檔（嚴禁提交真實密碼）
+.env
+
+# 系統與編輯器暫存
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
