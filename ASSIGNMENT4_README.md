@@ -33,8 +33,6 @@ GRANT ALL PRIVILEGES ON train_db.* TO 'dev_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-> `schema.sql` 也包含上述資料庫與帳號建立指令。由 root 匯入 schema 時可擇一執行；重複執行不會覆寫既有資料庫。
-
 ## 3. Python 虛擬環境與 `.env`
 
 在專案根目錄執行：
@@ -58,16 +56,16 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=dev_user
-DB_PASSWORD=DevPass123!
+DB_PASSWORD=<your_password>
 DB_NAME=train_db
 ```
 
 ## 4. 匯入資料表與種子資料
 
-在專案根目錄，以 root 匯入 schema（因其包含建立資料庫與帳號的指令），再以 `dev_user` 匯入種子資料。下列為 **PowerShell** 指令，使用管線傳入 SQL 檔：
+在專案根目錄，以 `dev_user` 匯入資料表結構與種子資料。下列為 **PowerShell** 指令，使用管線傳入 SQL 檔：
 
 ```powershell
-Get-Content .\schema.sql | mysql -u root -p
+Get-Content .\schema.sql | mysql -u dev_user -p train_db
 Get-Content .\seed.sql | mysql -u dev_user -p train_db
 ```
 
@@ -83,7 +81,7 @@ python app.py
 
 開啟個人作品管理頁：<http://127.0.0.1:5000/members/ray-fan.html>
 
-Flask 只監聽本機 `127.0.0.1:5000`，停止服務請在終端機按 `Ctrl+C`。
+`app.py` 預設監聽本機 `127.0.0.1:5000`，也可在 `.env` 設定 `PORT` 自訂埠號；例如 macOS 可設為 `PORT=5001`，以避開 AirPlay 服務可能使用的埠號。使用自訂埠號時，請將上方網址中的 `5000` 改為對應的埠號。停止服務請在終端機按 `Ctrl+C`。
 
 ## 6. 資料表與 RESTful API
 
@@ -253,17 +251,16 @@ Get-Content .\seed.sql | mysql -u dev_user -p train_db
 
 ```powershell
 mysql -u root -p -e "DROP DATABASE IF EXISTS train_db;"
-Get-Content .\schema.sql | mysql -u root -p
+mysql -u root -p -e "CREATE DATABASE train_db DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;"
+Get-Content .\schema.sql | mysql -u dev_user -p train_db
 Get-Content .\seed.sql | mysql -u dev_user -p train_db
 ```
 
 ### 已知問題與改善建議
 
-- `schema.sql` 的帳號密碼為示範值 `DevPass123!`；實際繳交或部署時應改為強密碼，並只保留於 `.env`，不可提交版本控制。
 - API 錯誤回應目前會包含原始例外字串；正式環境應記錄伺服器端日誌，回傳通用錯誤訊息。
 - 後端網址驗證目前只檢查 `http://`、`https://` 開頭；可改用 `urllib.parse.urlparse()` 再確認 hostname，以提高資料品質。
 - `GET /api/projects` 目前一次回傳所有資料；作品量增加時可加上分頁與伺服器端搜尋。
-- 個人頁的說明文字仍寫著「變更僅保留在本次瀏覽，重新整理後會重設」；目前實作已改為寫入 MySQL，應更新為資料會持久保存。
 
 ## 8. 自動化測試說明與結果
 
@@ -275,20 +272,24 @@ Get-Content .\seed.sql | mysql -u dev_user -p train_db
    CREATE DATABASE IF NOT EXISTS train_test_db DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
    GRANT ALL PRIVILEGES ON train_test_db.* TO 'dev_user'@'localhost';
    FLUSH PRIVILEGES;
+   ```
 
 2. 匯入資料表結構（於 PowerShell 執行）：
    ```powershell
    Get-Content .\schema.sql | mysql -u dev_user -p train_test_db
+   ```
 
-執行自動化測試指令
+### 執行自動化測試指令
 
 請先確認虛擬環境已啟用（命令列前方有 (.venv)），於專案根目錄執行：
-```
-PowerShell
-python -m unittest test_app.py -v
 
-實際執行結果
-Plaintext
+```powershell
+python -m unittest test_app.py -v
+```
+
+### 實際執行結果
+
+```text
 test_01_create_and_get_project_success (test_app.ProjectApiTestCase.test_01_create_and_get_project_success) ... ok
 test_02_invalid_project_rejected_and_not_stored (test_app.ProjectApiTestCase.test_02_invalid_project_rejected_and_not_stored) ... ok
 test_03_update_and_delete_specific_project_isolates_others (test_app.ProjectApiTestCase.test_03_update_and_delete_specific_project_isolates_others) ... ok
@@ -298,3 +299,4 @@ test_04_nonexistent_id_returns_404 (test_app.ProjectApiTestCase.test_04_nonexist
 Ran 4 tests in 0.085s
 
 OK
+```
