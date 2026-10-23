@@ -28,7 +28,7 @@ CREATE DATABASE IF NOT EXISTS train_db
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
-CREATE USER IF NOT EXISTS 'dev_user'@'localhost' IDENTIFIED BY 'DevPass123!';
+CREATE USER IF NOT EXISTS 'dev_user'@'localhost' IDENTIFIED BY '<your_password>';
 GRANT ALL PRIVILEGES ON train_db.* TO 'dev_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
@@ -71,7 +71,7 @@ Get-Content .\schema.sql | mysql -u root -p
 Get-Content .\seed.sql | mysql -u dev_user -p train_db
 ```
 
-輸入 `DevPass123!` 後，資料庫會建立 `projects` 資料表及三筆示範資料。若使用 Windows 命令提示字元（cmd），才可使用 `< schema.sql` 與 `< seed.sql` 的輸入重導向。
+輸入 `<your_password>` 後，資料庫會建立 `projects` 資料表及三筆示範資料。若使用 Windows 命令提示字元（cmd），才可使用 `< schema.sql` 與 `< seed.sql` 的輸入重導向。
 
 ## 5. 啟動 Flask 與個人頁
 

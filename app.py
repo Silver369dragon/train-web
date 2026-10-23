@@ -225,5 +225,5 @@ def delete_project(project_id):
             conn.close()
 
 if __name__ == '__main__':
-    # 啟動本機伺服器
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='127.0.0.1', port=port, debug=True)
