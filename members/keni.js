@@ -1,38 +1,9 @@
 "use strict";
 
-const statusLabels = {
-  in_progress: "進行中",
-  completed: "已完成",
-};
-
-let projects = [
-  {
-    id: "project-1",
-    name: "個人介紹網站",
-    description: "整理自己的背景、技術專長與開發方向，練習響應式網頁排版。",
-    technologies: "HTML、CSS",
-    status: "completed",
-    url: "https://example.com/portfolio",
-  },
-  {
-    id: "project-2",
-    name: "課程點名系統",
-    description: "提供老師新增點名紀錄、輸入日期及管理學生出缺席狀況。學生可以被記錄為出席、遲到或缺席，並能查看過去的點名紀錄與統計結果。",
-    technologies: "HTML、CSS、JavaScript",
-    status: "completed",
-    url: "https://cornelia261610-afk.github.io/attendance-system/",
-  },
-  {
-    id: "project-3",
-    name: "課程資料整理工具",
-    description: "使用程式整理課程資訊，將資料分類並建立簡單的查詢功能。",
-    technologies: "Python、CSV",
-    status: "in_progress",
-    url: "",
-  },
-];
-
-let nextProjectId = 4;
+const API_URL = "/api/projects";
+const allowedStatuses = new Set(["進行中", "已完成"]);
+let projects = [];
+let projectsLoaded = false;
 let editingId = null;
 
 const form = document.getElementById("project-form");
@@ -64,29 +35,24 @@ function clearErrors() {
   Object.values(fields).forEach((field) => {
     field.removeAttribute("aria-invalid");
     const error = document.getElementById(`${field.id}-error`);
-    if (error) {
-      error.textContent = "";
-      error.hidden = true;
-    }
+    error.textContent = "";
+    error.hidden = true;
   });
 }
 
 function isValidProjectUrl(value) {
-  if (!/^https?:\/\//i.test(value) || /\s/.test(value)) {
-    return false;
-  }
+  if (!/^https?:\/\//i.test(value) || /\s/.test(value)) return false;
 
   try {
     const url = new URL(value);
-    return (url.protocol === "http:" || url.protocol === "https:") && Boolean(url.hostname);
-  } catch (error) {
+    return ["http:", "https:"].includes(url.protocol) && Boolean(url.hostname);
+  } catch {
     return false;
   }
 }
 
 function readProject() {
   clearErrors();
-
   const data = {
     name: fields.name.value.trim(),
     description: fields.description.value.trim(),
@@ -94,55 +60,49 @@ function readProject() {
     status: fields.status.value,
     url: fields.url.value.trim(),
   };
-
   const errors = {};
 
-  if (!data.name) {
-    errors.name = "請輸入作品名稱";
-  } else if (data.name.length > 80) {
-    errors.name = "作品名稱最多 80 字";
-  }
-
-  if (data.description.length > 500) {
-    errors.description = "作品介紹最多 500 字";
-  }
-
-  if (data.technologies.length > 100) {
-    errors.technologies = "使用技術最多 100 字";
-  }
-
-  if (data.status !== "in_progress" && data.status !== "completed") {
-    errors.status = "請選擇進行中或已完成";
-  }
-
+  if (!data.name) errors.name = "請輸入作品名稱";
+  else if (data.name.length > 80) errors.name = "作品名稱最多 80 字";
+  if (data.description.length > 500) errors.description = "作品介紹最多 500 字";
+  if (data.technologies.length > 100) errors.technologies = "使用技術最多 100 字";
+  if (!allowedStatuses.has(data.status)) errors.status = "請選擇進行中或已完成";
   if (data.url && !isValidProjectUrl(data.url)) {
     errors.url = "請輸入有效的 http:// 或 https:// 網址";
   }
 
   const errorKeys = Object.keys(errors);
-  if (errorKeys.length === 0) {
-    return data;
-  }
+  if (errorKeys.length === 0) return data;
 
   errorKeys.forEach((key) => {
     const field = fields[key];
-    if (!field) return;
-
     field.setAttribute("aria-invalid", "true");
     const error = document.getElementById(`${field.id}-error`);
-    if (error) {
-      error.textContent = errors[key];
-      error.hidden = false;
-    }
+    error.textContent = errors[key];
+    error.hidden = false;
   });
-
   showMessage("尚未儲存，請修正標示的欄位。", true);
-  const firstErrorField = fields[errorKeys[0]];
-  if (firstErrorField) {
-    firstErrorField.focus();
-  }
-
+  fields[errorKeys[0]].focus();
   return null;
+}
+
+async function requestProjects(url, options = {}) {
+  const response = await fetch(url, options);
+  if (response.status === 204) return null;
+
+  const result = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(result?.error || "伺服器目前無法完成要求。");
+  }
+  return result;
+}
+
+function setSubmitting(isSubmitting) {
+  submitButton.disabled = isSubmitting;
+  cancelButton.disabled = isSubmitting;
+  Object.values(fields).forEach((field) => {
+    field.disabled = isSubmitting;
+  });
 }
 
 function resetForm() {
@@ -155,9 +115,8 @@ function resetForm() {
 }
 
 function createProjectItem(project) {
-  const source = template.content.firstElementChild;
-  const item = source.cloneNode(true);
-  item.dataset.id = project.id;
+  const item = template.content.firstElementChild.cloneNode(true);
+  item.dataset.id = String(project.id);
 
   const name = item.querySelector(".project-name");
   const description = item.querySelector(".project-description");
@@ -170,11 +129,10 @@ function createProjectItem(project) {
   name.textContent = project.name;
   description.textContent = project.description || "尚未填寫作品介紹";
   technologies.textContent = project.technologies || "尚未填寫";
+  badge.textContent = project.status;
+  badge.dataset.status = project.status === "已完成" ? "completed" : "in_progress";
 
-  badge.textContent = statusLabels[project.status] || "進行中";
-  badge.dataset.status = project.status;
-
-  if (project.url) {
+  if (project.url && isValidProjectUrl(project.url)) {
     link.href = project.url;
     link.hidden = false;
   } else {
@@ -183,11 +141,17 @@ function createProjectItem(project) {
 
   editButton.setAttribute("aria-label", `編輯「${project.name}」`);
   deleteButton.setAttribute("aria-label", `刪除「${project.name}」`);
-
   return item;
 }
 
 function renderProjects() {
+  if (!projectsLoaded) {
+    list.replaceChildren();
+    count.textContent = "作品清單尚未載入";
+    empty.hidden = true;
+    return;
+  }
+
   const query = searchInput.value.trim().toLowerCase();
   const filtered = projects.filter((project) => {
     const matchesName = project.name.toLowerCase().includes(query);
@@ -199,24 +163,37 @@ function renderProjects() {
   count.textContent = `共 ${projects.length} 筆作品，目前顯示 ${filtered.length} 筆`;
 
   if (projects.length === 0) {
-    empty.hidden = false;
     empty.textContent = "尚未新增作品";
-  } else if (filtered.length === 0) {
     empty.hidden = false;
+  } else if (filtered.length === 0) {
     empty.textContent = "找不到符合條件的作品";
+    empty.hidden = false;
   } else {
-    empty.hidden = true;
     empty.textContent = "";
+    empty.hidden = true;
+  }
+}
+
+async function loadProjects() {
+  try {
+    const result = await requestProjects(API_URL);
+    if (!Array.isArray(result)) throw new Error("伺服器回傳的作品清單格式不正確。");
+    projects = result;
+    projectsLoaded = true;
+    renderProjects();
+  } catch (error) {
+    projectsLoaded = false;
+    renderProjects();
+    showMessage(`載入作品失敗：${error.message}`, true);
   }
 }
 
 function editProject(id) {
-  const project = projects.find((item) => item.id === id);
+  const project = projects.find((item) => String(item.id) === id);
   if (!project) return;
 
   clearErrors();
-  editingId = id;
-
+  editingId = project.id;
   Object.keys(fields).forEach((key) => {
     fields[key].value = project[key] || "";
   });
@@ -228,46 +205,57 @@ function editProject(id) {
   fields.name.focus();
 }
 
-function deleteProject(id) {
-  const project = projects.find((item) => item.id === id);
-  if (!project) return;
+async function deleteProject(id) {
+  const project = projects.find((item) => String(item.id) === id);
+  if (!project || !window.confirm(`確定要刪除「${project.name}」嗎？`)) return;
 
-  const confirmed = window.confirm(`確定要刪除「${project.name}」嗎？`);
-  if (!confirmed) return;
-
-  projects = projects.filter((item) => item.id !== id);
-
-  if (editingId === id) {
-    resetForm();
+  try {
+    await requestProjects(`${API_URL}/${encodeURIComponent(project.id)}`, {
+      method: "DELETE",
+    });
+    projects = projects.filter((item) => item.id !== project.id);
+    if (editingId === project.id) resetForm();
+    renderProjects();
+    showMessage(`已刪除「${project.name}」。`);
+    fields.name.focus();
+  } catch (error) {
+    showMessage(`刪除失敗：${error.message}`, true);
   }
-
-  renderProjects();
-  showMessage(`已刪除「${project.name}」。`);
-  fields.name.focus();
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-
   const data = readProject();
   if (!data) return;
 
   const wasEditing = editingId !== null;
+  const url = wasEditing
+    ? `${API_URL}/${encodeURIComponent(editingId)}`
+    : API_URL;
+  const method = wasEditing ? "PUT" : "POST";
+  setSubmitting(true);
 
-  if (wasEditing) {
-    projects = projects.map((project) =>
-      project.id === editingId ? { ...project, ...data } : project
-    );
-  } else {
-    projects.unshift({
-      id: `project-${nextProjectId++}`,
-      ...data,
+  try {
+    const savedProject = await requestProjects(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
+    if (wasEditing) {
+      projects = projects.map((project) =>
+        project.id === editingId ? savedProject : project
+      );
+    } else {
+      projects.unshift(savedProject);
+    }
+    resetForm();
+    renderProjects();
+    showMessage(`已${wasEditing ? "儲存" : "新增"}「${savedProject.name}」。`);
+  } catch (error) {
+    showMessage(`${wasEditing ? "儲存修改" : "新增作品"}失敗：${error.message}`, true);
+  } finally {
+    setSubmitting(false);
   }
-
-  resetForm();
-  renderProjects();
-  showMessage(`已${wasEditing ? "儲存" : "新增"}「${data.name}」。`);
 });
 
 cancelButton.addEventListener("click", () => {
@@ -277,29 +265,18 @@ cancelButton.addEventListener("click", () => {
 });
 
 list.addEventListener("click", (event) => {
-  const target = event.target;
-  if (!(target instanceof Element)) return;
+  if (!(event.target instanceof Element)) return;
 
-  const button = target.closest("button[data-action]");
-  if (!button) return;
+  const button = event.target.closest("button[data-action]");
+  const item = button?.closest("li[data-id]");
+  const id = item?.dataset.id;
+  if (!button || !id) return;
 
-  const item = button.closest("li[data-id]");
-  if (!(item instanceof HTMLElement)) return;
-
-  const id = item.dataset.id;
-  if (!id) return;
-
-  const action = button.getAttribute("data-action");
-  if (action === "edit") {
-    editProject(id);
-  }
-
-  if (action === "delete") {
-    deleteProject(id);
-  }
+  if (button.dataset.action === "edit") editProject(id);
+  if (button.dataset.action === "delete") deleteProject(id);
 });
 
 searchInput.addEventListener("input", renderProjects);
 filterSelect.addEventListener("change", renderProjects);
 
-renderProjects();
+loadProjects();
