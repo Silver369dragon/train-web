@@ -1,0 +1,28 @@
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local databases, dumps, backups, and credentials
+*.db
+*.sqlite3
+*.sql.gz
+*.sql.bak
+*.sql.backup
+*_backup.sql
+*-backup.sql
+*.dump
+*.backup
+*.bak
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
