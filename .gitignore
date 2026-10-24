@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# 環境變數與機密資訊
+.env
+*.pem
+*.key
+
+# 測試與覆蓋率
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 編輯器與系統暫存
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# MySQL 備份與日誌
+*.dump
+*.sql.gz
+mysql-data/

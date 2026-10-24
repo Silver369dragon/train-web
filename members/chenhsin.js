@@ -5,35 +5,8 @@ const STATUS_LABELS = {
   completed: "已完成"
 };
 
-let projects = [
-  {
-    id: "proj-1",
-    name: "個人介紹網站",
-    description: "陳歆的個人自我介紹頁面，採用語意化 HTML5 與現代化 CSS3 建立良好排版，展現個人背景、專長與作品。",
-    technologies: "HTML、CSS",
-    status: "completed",
-    url: "https://github.com/arielchen0807/train-web"
-  },
-  {
-    id: "proj-2",
-    name: "作品紀錄管理系統",
-    description: "以原生 JavaScript 開發的作品紀錄管理介面，支援作品新增、編輯、刪除、即時關鍵字搜尋與狀態篩選功能。",
-    technologies: "HTML、CSS、JavaScript",
-    status: "in_progress",
-    url: "https://github.com/arielchen0807/train-web"
-  },
-  {
-    id: "proj-3",
-    name: "選課系統",
-    description: "利用自訂資料結構管理課程資料，實作課表碰撞偵測演算法與快速篩選查詢功能。",
-    technologies: "C++",
-    status: "completed",
-    url: ""
-  }
-];
-
+let projects = [];
 let editingId = null;
-let idCounter = Date.now();
 
 const form = document.getElementById("project-form");
 const formTitle = document.getElementById("form-title");
@@ -322,6 +295,24 @@ function renderProjects() {
   }
 }
 
+// ─── API 串接與非同步處理 ───────────────────────────────────────────────────
+
+async function loadProjects() {
+  try {
+    const res = await fetch("/api/projects");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `伺服器回應錯誤 (${res.status})`);
+    }
+    const data = await res.json();
+    projects = Array.isArray(data) ? data : [];
+    renderProjects();
+  } catch (err) {
+    showNotification(`無法載入作品清單: ${err.message}`, "error");
+    renderProjects();
+  }
+}
+
 function handleStartEdit(id) {
   const target = projects.find((p) => p.id === id);
   if (!target) return;
@@ -330,17 +321,16 @@ function handleStartEdit(id) {
   editingId = target.id;
 
   formFields.name.input.value = target.name;
-  formFields.description.input.value = target.description;
-  formFields.technologies.input.value = target.technologies;
+  formFields.description.input.value = target.description || "";
+  formFields.technologies.input.value = target.technologies || "";
   formFields.status.input.value = target.status;
-  formFields.url.input.value = target.url;
+  formFields.url.input.value = target.url || "";
 
   formTitle.textContent = "編輯作品";
   btnSubmit.textContent = "儲存修改";
   btnCancel.hidden = false;
 
   showNotification(`正在編輯「${target.name}」。`, "info");
-
   form.scrollIntoView({ behavior: "smooth", block: "nearest" });
   formFields.name.input.focus();
 }
@@ -351,7 +341,7 @@ function handleCancelEdit() {
   formFields.name.input.focus();
 }
 
-function handleDeleteProject(id) {
+async function handleDeleteProject(id) {
   const target = projects.find((p) => p.id === id);
   if (!target) return;
 
@@ -360,17 +350,30 @@ function handleDeleteProject(id) {
     return;
   }
 
-  projects = projects.filter((p) => p.id !== id);
+  try {
+    const res = await fetch(`/api/projects/${id}`, {
+      method: "DELETE"
+    });
 
-  if (editingId === id) {
-    resetFormToAddMode();
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `刪除失敗 (${res.status})`);
+    }
+
+    projects = projects.filter((p) => p.id !== id);
+
+    if (editingId === id) {
+      resetFormToAddMode();
+    }
+
+    renderProjects();
+    showNotification(`已成功刪除「${target.name}」。`, "success");
+  } catch (err) {
+    showNotification(`刪除失敗: ${err.message}`, "error");
   }
-
-  renderProjects();
-  showNotification(`已成功刪除「${target.name}」。`, "success");
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const validatedData = validateForm();
@@ -378,26 +381,61 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  if (editingId !== null) {
-    const targetIndex = projects.findIndex((p) => p.id === editingId);
-    if (targetIndex !== -1) {
-      projects[targetIndex] = {
-        id: editingId,
-        ...validatedData
-      };
-      showNotification(`已成功儲存作品「${validatedData.name}」的修改！`, "success");
-    }
-  } else {
-    const newProject = {
-      id: `proj-${++idCounter}`,
-      ...validatedData
-    };
-    projects.unshift(newProject);
-    showNotification(`已成功新增作品「${validatedData.name}」！`, "success");
-  }
+  btnSubmit.disabled = true;
 
-  resetFormToAddMode();
-  renderProjects();
+  try {
+    if (editingId !== null) {
+      // 修改作品
+      const res = await fetch(`/api/projects/${editingId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(validatedData)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `修改失敗 (${res.status})`);
+      }
+
+      const updatedProject = await res.json();
+      const targetIndex = projects.findIndex((p) => p.id === editingId);
+      if (targetIndex !== -1) {
+        projects[targetIndex] = updatedProject;
+      }
+
+      resetFormToAddMode();
+      renderProjects();
+      showNotification(`已成功儲存作品「${updatedProject.name}」的修改！`, "success");
+    } else {
+      // 新增作品
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(validatedData)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `新增失敗 (${res.status})`);
+      }
+
+      const newProject = await res.json();
+      projects.unshift(newProject);
+
+      resetFormToAddMode();
+      renderProjects();
+      showNotification(`已成功新增作品「${newProject.name}」！`, "success");
+    }
+  } catch (err) {
+    showNotification(`儲存失敗: ${err.message}`, "error");
+    // 保留表單內容供修正
+  } finally {
+    btnSubmit.disabled = false;
+  }
 });
 
 btnCancel.addEventListener("click", handleCancelEdit);
@@ -405,5 +443,5 @@ btnCancel.addEventListener("click", handleCancelEdit);
 searchInput.addEventListener("input", renderProjects);
 statusFilter.addEventListener("change", renderProjects);
 
-renderProjects();
-
+// 頁面載入時從後端 API 取得資料
+loadProjects();
